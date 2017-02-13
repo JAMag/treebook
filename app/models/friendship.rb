@@ -12,7 +12,19 @@ class Friendship < ActiveRecord::Base
     self.destroy
   end
 
+  def pending_friend_requests_from
+    self.inverse_friendships.where(state: "pending")
+  end
+
+  def pending_friend_requests_to
+    self.friendships.where(state: "pending")
+  end
+
   def cancel_friendship
     self.destroy
+  end
+
+  def active_friends
+    self.friendships.where(state: "active").map(&:friend)+ self.inverse_friendships.where(state: "active").map(&:user)
   end
 end
