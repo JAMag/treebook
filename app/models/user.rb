@@ -4,25 +4,24 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-
   validates_presence_of :username
   validates_uniqueness_of :username
 
   has_many :friendships, dependent: :destroy
   has_many :inverse_friendships, class_name: "Friendship", foreign_key: "friend_id", dependent: :destroy
+  has_many :posts, dependent: :destroy
 
 
   def request_friendship(user_2)
     self.friendships.create(friend: user_2)
-
-  end
-
-  def pending_friend_requests_to
-    self.friendships.where(state: "pending")
   end
 
   def pending_friend_requests_from
     self.inverse_friendships.where(state: "pending")
+  end
+
+  def pending_friend_requests_to
+    self.friendships.where(state: "pending")
   end
 
   def active_friends
@@ -30,7 +29,7 @@ class User < ActiveRecord::Base
   end
 
   def friendship_status(user_2)
-    friendship = Friendship.where(user_id: [self.id, user_2.id], friend_id: [self.id, user_2.id])
+    friendship = Friendship.where(user_id: [self.id,user_2.id], friend_id: [self.id,user_2.id])
     unless friendship.any?
       return "not_friends"
     else
@@ -42,12 +41,11 @@ class User < ActiveRecord::Base
         else
           return "requested"
         end
+      end
     end
   end
 
-
-
-
-end
-
+  def friendship_relation(user_2)
+    Friendship.where(user_id: [self.id, user_2.id], friend_id: [self.id, user_2.id]).first
+  end
 end
