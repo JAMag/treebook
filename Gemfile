@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'twitter-bootstrap-rails'
 gem 'devise'
 gem 'gravatarify', '~> 3.0.0'
+gem 'public_activity'
 
 gem 'simple_form'
 
